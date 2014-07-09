@@ -56,10 +56,13 @@ def assemble(bot, trigger):
     with open(filename, 'w') as f:
         f.write('BITS %i\n' % bits + re.sub(r';\s*', ';\n', code))
 
-    p = Popen(['nasm', '-f', 'bin', '-o', filename[:-4], filename])
+    p = Popen(['nasm', '-f', 'bin', '-o', filename[:-4], filename], stderr=PIPE)
     p.wait()
 
     os.remove(filename)
+
+    for line in p.stderr.read().split('\n'):
+        bot.say(line)
 
     if p.returncode == 0:
         with open(filename[:-4], 'rb') as f:
@@ -67,8 +70,4 @@ def assemble(bot, trigger):
             hex = hexlify(raw)
             if hex:
                 bot.say(hex)
-            else:
-                bot.say('Sorry, can\'t assemble that')
         os.remove(filename[:-4])
-    else:
-        bot.say('Sorry, can\'t assemble that')
