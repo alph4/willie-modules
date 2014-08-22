@@ -23,6 +23,8 @@ def disassemble(bot, trigger):
         return bot.reply('Nothing to disassemble')
     try:
         arg = trigger.group(2)
+        # remove everything except hex
+        code = re.sub(r"[^a-fA-F0-9]", r"", code)
         code = unhexlify(arg[2:] if 'x' in arg else arg)
     except Exception:
         return bot.say('Invalid hex sequence')
